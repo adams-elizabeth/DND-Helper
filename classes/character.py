@@ -1,9 +1,10 @@
 class Character:
-    def __init__(self, name, maxhp, hp, atk):
+    def __init__(self, name, maxhp, hp, atk, ac):
         self.name = name
         self.maxhp = int(maxhp)
-        self.hp = int(hp)    # current health
-        self.atk = int(atk)  # attack modifiers
+        self.hp = int(hp)       # current health
+        self.atk = int(atk)     # attack modifiers
+        self.ac = int(ac)       # armor class
 
     def __str__(self):
         return self.name + "'s HP is " + str(self.hp) + "/" + str(self.maxhp) + " & ATK is " + str(self.atk)

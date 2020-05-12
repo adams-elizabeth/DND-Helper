@@ -7,12 +7,9 @@ import sys
 import random
 import pandas as pd
 from classes.character import Character
-'''
-    Add weapons class
-        -attributes: name, damage (ex:3d4+2)
-    Add ac (armor class) trait to characters
-    Add equip_weapon function to characters
-'''
+    # TODO: Add weapons class
+    #     -attributes: name, damage (ex:3d4+2)
+    # TODO: Add equip_weapon function to characters
 
 
 # Roll a 4-, 6-, 8-, 10-, 12-, or 20-sided die
@@ -20,9 +17,14 @@ def roll(input_array):
     sides = int(input_array[1])
     possible_sides = set([4, 6, 8, 10, 12, 20])
     if sides in possible_sides:
-        print(str(random.randrange(1, sides)))
+        print(str(get_roll(sides)))
     else:
         print("Error: This game is only equipped with 4, 6, 8, 10, 12, and 20-sided dice.")
+
+
+# Calculate a roll of the die
+def get_roll(sides):
+    return random.randrange(1, sides)
 
 
 # Add a character to the character array
@@ -56,7 +58,7 @@ def heal(input_array):
     global characters
     char = characters[input_array[1]]
     char.get_healed(int(input_array[2]))
-    print(char.name + " was healed! New HP is " + char.hp)
+    print(char.name + " was healed! New HP is " + str(char.hp) + "/" + str(char.maxhp))
 
 
 # Damage character's HP up to 0 (death)
@@ -68,6 +70,30 @@ def damage(input_array):
         print(char.name + " has perished!")
     else:
         print(char.name + " took damage! New HP is " + str(char.hp) + "/" + str(char.maxhp))
+
+
+# input: [attack, attacker, victim]
+# Handle an attack. Roll 20 to see if the attack hits, then roll based on the weapon to see how much damage was
+# inflicted.
+def attack(input_array):
+    attacker = characters[input_array[1]]
+    victim = characters[input_array[2]]
+    hit_roll = get_roll(20)
+    if hit_roll == 20:
+        victim.hp = 0
+        print(attacker.name + " made a critical hit! " + victim.name + " has perished.")
+    elif hit_roll == 1:
+        damage_roll = get_roll(6)   # TODO: Implement weapons with custom damage
+        attacker.take_damage(damage_roll)
+        print(attacker.name + " fumbled and self-inflicted " + str(damage_roll) + " damage. New HP is " +
+              str(attacker.hp) + "/" + str(attacker.maxhp))
+    elif hit_roll >= victim.ac:
+        damage_roll = get_roll(6)   # TODO: Implement weapons with custom damage
+        victim.take_damage(damage_roll)
+        print(attacker.name + " rolled " + str(hit_roll) + " and hit " + victim.name + " for " + str(damage_roll) +
+              " damage New HP is " + str(victim.hp) + "/" + str(victim.maxhp))
+    elif hit_roll < victim.ac:
+        print(attacker.name + " rolled " + str(hit_roll) + " and missed " + victim.name)
 
 
 # Print help text
@@ -130,3 +156,4 @@ while True:
     except IndexError:
         print("Sorry, I think that command was missing an argument. Please find the list of commands below.\n\n")
         help()
+
